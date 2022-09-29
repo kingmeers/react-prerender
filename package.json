@@ -1,5 +1,5 @@
 {
-  "name": "react-spa-prerender",
+  "name": "react-prerender",
   "version": "1.0.14",
   "description": "React library for prerendering static pages, optimize SEO and web performance",
   "main": "index.js",
@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
-    "react-spa-prerender": "./run.js"
+    "react-prerender": "./run.js"
   },
   "repository": {
     "type": "git",
@@ -18,7 +18,7 @@
     "run.js",
     "utils"
   ],
-  "author": "serhiypavlov33@gmail.com",
+  "author": "sechahi@gmail.com",
   "license": "MIT",
   "dependencies": {
     "express": "^4.17.1",

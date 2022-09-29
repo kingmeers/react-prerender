@@ -120,7 +120,7 @@ async function run(config) {
   if (!staticServerURL) return 0;
 
   await runPuppeteer(staticServerURL, options.routes, options.buildDirectory, options.engine);
-  console.log('Finish react-spa-prerender tasks!');
+  console.log('Finish react-prerender things to do.');
   process.exit();
 }
 
