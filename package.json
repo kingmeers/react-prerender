@@ -4,14 +4,14 @@
   "description": "React library for prerendering static pages, optimize SEO and web performance",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "run": "./run.js"
   },
   "bin": {
     "react-prerender": "./run.js"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/sPavl0v/react-spa-prenderer"
+    "url": "git@github.com:kingmeers/react-prerender.git#master"
   },
   "files": [
     "index.js",
