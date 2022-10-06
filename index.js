@@ -52,17 +52,19 @@ async function runStaticServer(port, routes, dir) {
  * @param {string} html
  * @param {string} dir
  */
-async function createNewHTMLPage(route, html, dir) {
+async function createNewHTMLPage(route, html, dir, prod) {
   try {
     if (route.indexOf('/') !== route.lastIndexOf('/')) {
       const subDir = route.slice(0, route.lastIndexOf('/'));
-      await ensureDirExists(`${dir}${subDir}`);
+      await ensureDirExists(`${prod}${subDir}`);
     }
+
+    console.log("prod", prod)
 
     const fileName = getValidatedFileName(route);
 
-    await fs.writeFileSync(`${dir}${fileName}`, html, {encoding: 'utf-8', flag: 'w'});
-    console.log(`Created ${fileName}`);
+    await fs.writeFileSync(`${prod}${fileName}`, html, {encoding: 'utf-8', flag: 'w'});
+    console.log(`Created ${prod}${fileName}`);
   } catch (err) {
     throw new Error(`Error: Failed to create HTML page for ${route}.\nMessage: ${err}`);
   }
@@ -77,8 +79,23 @@ async function createNewHTMLPage(route, html, dir) {
 async function getHTMLfromPuppeteerPage(browser, pageUrl, options) {
   try {
     const page = await browser.newPage();
+    const slashCount = (pageUrl.match(/\//g) || []).length;
 
-    await page.goto(pageUrl, Object.assign({waitUntil: 'networkidle0'}, options));
+    console.log(pageUrl);
+
+    await page.goto(pageUrl, {}, options);
+
+    console.log(`length: ${slashCount}`);
+    
+    if (slashCount > 3) {
+      await page.waitForSelector('.pD3ks-1', {
+        visible: true,
+      });
+    } else if (pageUrl.includes("-")) {
+      await page.waitForSelector('.temp-hcntn', {
+        visible: true,
+      });
+    }
 
     const html = await page.content();
     if (!html) return 0;
@@ -94,15 +111,17 @@ async function getHTMLfromPuppeteerPage(browser, pageUrl, options) {
  * @param {string[]} routes
  * @param {string} dir
  * @param {object} engine
+ * * @param {string} prod
  * @returns {number|undefined}
  */
-async function runPuppeteer(baseUrl, routes, dir, engine) {
+async function runPuppeteer(baseUrl, routes, dir, engine, prod) {
   const browser = await puppeteer.launch(engine.launchOptions);
+  console.log(prod);
   for (let i = 0; i < routes.length; i++) {
     try {
       console.log(`Processing route "${routes[i]}"`);
       const html = await getHTMLfromPuppeteerPage(browser, `${baseUrl}${routes[i]}`, engine.gotoOptions);
-      if (html) createNewHTMLPage(routes[i], html, dir);
+      if (html) createNewHTMLPage(routes[i], html, dir, prod);
       else return 0;
     } catch (err) {
       throw new Error(`Error: Failed to process route "${routes[i]}"\nMessage: ${err}`);
@@ -119,7 +138,7 @@ async function run(config) {
 
   if (!staticServerURL) return 0;
 
-  await runPuppeteer(staticServerURL, options.routes, options.buildDirectory, options.engine);
+  await runPuppeteer(staticServerURL, options.routes, options.buildDirectory, options.engine, options.productionDirectory);
   console.log('Finish react-prerender things to do.');
   process.exit();
 }

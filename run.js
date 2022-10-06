@@ -2,5 +2,3 @@
 const { run } = require('./index');
 
 run();
-
-//s
